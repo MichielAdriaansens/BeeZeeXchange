@@ -1,6 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 
-//some weird shit goin on
+//libraries for testing, interacting with blockchain
 require("@nomicfoundation/hardhat-chai-matchers");
 require("@nomiclabs/hardhat-ethers");
 //
