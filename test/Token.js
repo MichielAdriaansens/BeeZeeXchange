@@ -7,12 +7,13 @@ const tokens = (_amount) => {
 }
 
 describe("Token", ()=>{
-    let token;
+    let token, accounts;
 
     beforeEach(async ()=>{
         //fetch the Token Contract
         const Token = await ethers.getContractFactory("Token") //dit is een referentie naar het Contract.
         token = await Token.deploy("NiggaToken","NT",1000000) //om goed te testen moet je het contract eerst deployen. 
+        accounts = await ethers.getSigners();
     })
 
     describe("Deployment",() => {
@@ -40,6 +41,12 @@ describe("Token", ()=>{
             assert.equal(await token.totalSupply(), tSupply) //..assert*werkt wel, value omzetten naar string:p
             console.log(await token.totalSupply());
         })
+        it("assigns total supply to deployer", async () => { 
+            // expect(await token.totalSupply()).to.equal(value)
+                assert.equal(await token.balanceOf(accounts[0].address), tSupply) //..assert*werkt wel, value omzetten naar string:p
+                console.log(await token.balanceOf(accounts[0].address));
+            })
+        
     })
 
 })
