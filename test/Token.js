@@ -2,8 +2,8 @@ const { assert } = require("chai")
 const { expect } = require("chai")
 const { ethers } = require("hardhat")
 
-const tokens = (_amount) => {
-   return ethers.utils.parseUnits(`${_amount}`, "ether").toString()
+const tokens = (amount) => {
+   return ethers.utils.parseUnits(`${amount}`, "ether").toString()
 }
 
 describe("Token", ()=>{
@@ -50,13 +50,13 @@ describe("Token", ()=>{
     })
 
     describe("transfer Tokens", () =>{
-        let _amount, transaction, result;
+        let amount, transaction, result;
        
         beforeEach(async() => {
-            _amount = tokens("1000");
+            amount = tokens("1000");
 
             //call transfer function.. uses default account
-            transaction = await token.transfer(accounts[1].address , _amount);
+            transaction = await token.transfer(accounts[1].address , amount);
             
             //transaction.wait() zorgt ervoor dat je de receipt krijgt
             result = await transaction.wait();
@@ -67,7 +67,7 @@ describe("Token", ()=>{
         describe("success",() => {
             it("transfers Tokens",async ()=>{
                 //check if token got sent
-                assert.equal(await token.balanceOf(accounts[1].address), _amount);
+                assert.equal(await token.balanceOf(accounts[1].address), amount);
                 assert.equal(await token.balanceOf(accounts[0].address), tokens(1000000 - 1000));
                 console.log("receiver: " + (await token.balanceOf(accounts[1].address)));
                 console.log("sender: " + (await token.balanceOf(accounts[0].address)));
@@ -80,19 +80,57 @@ describe("Token", ()=>{
                 //check the args..arguments..input vd transfer functie opgeslagen in events
                 assert.equal(result.events[0].args._from, accounts[0].address);
                 assert.equal(result.events[0].args._to , accounts[1].address);
-                assert.equal(result.events[0].args._value, _amount);
+                assert.equal(result.events[0].args._value, amount);
             })
         })
-        describe("fail",() => {
+        describe("Failure",() => {
             //expect(...).to.be.reverted is een controle voor falen van require statements
             it("rejects isufficient funds", async() => {
                await expect(token.transfer(accounts[1].address, tokens(10000000))).to.be.reverted;
             })
             it("rejects invalid address", async () => {
-                await expect(token.transfer("0x0000000000000000000000000000000000000000", _amount)).to.be.reverted
+                await expect(token.transfer("0x0000000000000000000000000000000000000000", amount)).to.be.reverted
             })
         })
 
     })
+    describe("Approval of transfer", () => {
+        let amount, transaction, result;
+        let exchangeAdr;
+        amount = tokens(100000);
+        
+        beforeEach(async () =>{
+            exchangeAdr = accounts[2].address;
 
+            transaction = await token.approve(exchangeAdr, amount);
+            result = await transaction.wait();
+        }) 
+        describe("Success", () => {
+            it("gives allowance for authorised spending", async () => {
+                assert.equal(await token.allowance(accounts[0].address, exchangeAdr), amount);
+                
+            })
+            it("emits an event", async () =>{
+               // console.log(result.events[0].args);
+               assert.equal(result.events[0].event, "Approval");
+               assert.equal(result.events[0].args._owner, accounts[0].address);
+               assert.equal(result.events[0].args._spender, exchangeAdr);
+               assert.equal(result.events[0].args._value, amount);
+            })
+  
+        })
+        describe("failure", () => {
+            it("rejects invalid address", async () => {
+                
+                await expect(token.approve("0x0000000000000000000000000000000000000000", amount)).to.be.reverted;
+            })
+            
+            it("rejects value higher than owner's balance",async () =>{
+                let wrongAmount = await token.balanceOf(accounts[0].address) + 1;
+                
+                await expect(token.approve(exchangeAdr, wrongAmount)).to.be.reverted;
+            })
+            
+        })
+    })
 })
