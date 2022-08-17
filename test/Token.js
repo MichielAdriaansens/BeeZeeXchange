@@ -1,5 +1,5 @@
 const { assert } = require("chai")
-//const { expect } = require("chai")
+const { expect } = require("chai")
 const { ethers } = require("hardhat")
 
 const tokens = (_amount) => {
@@ -47,6 +47,52 @@ describe("Token", ()=>{
                 console.log(await token.balanceOf(accounts[0].address));
             })
         
+    })
+
+    describe("transfer Tokens", () =>{
+        let _amount, transaction, result;
+       
+        beforeEach(async() => {
+            _amount = tokens("1000");
+
+            //call transfer function.. uses default account
+            transaction = await token.transfer(accounts[1].address , _amount);
+            
+            //transaction.wait() zorgt ervoor dat je de receipt krijgt
+            result = await transaction.wait();
+            
+            // use a different account 
+            // token.connect('address').transfer(...)
+        })
+        describe("success",() => {
+            it("transfers Tokens",async ()=>{
+                //check if token got sent
+                assert.equal(await token.balanceOf(accounts[1].address), _amount);
+                assert.equal(await token.balanceOf(accounts[0].address), tokens(1000000 - 1000));
+                console.log("receiver: " + (await token.balanceOf(accounts[1].address)));
+                console.log("sender: " + (await token.balanceOf(accounts[0].address)));
+            })
+    
+            it("emits an event", async () => {
+               // console.log(result.events[0].args);
+                assert.equal(result.events[0].event, "Transfer");
+    
+                //check the args..arguments..input vd transfer functie opgeslagen in events
+                assert.equal(result.events[0].args._from, accounts[0].address);
+                assert.equal(result.events[0].args._to , accounts[1].address);
+                assert.equal(result.events[0].args._value, _amount);
+            })
+        })
+        describe("fail",() => {
+            //expect(...).to.be.reverted is een controle voor falen van require statements
+            it("rejects isufficient funds", async() => {
+               await expect(token.transfer(accounts[1].address, tokens(10000000))).to.be.reverted;
+            })
+            it("rejects invalid address", async () => {
+                await expect(token.transfer("0x0000000000000000000000000000000000000000", _amount)).to.be.reverted
+            })
+        })
+
     })
 
 })

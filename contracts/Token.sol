@@ -11,16 +11,23 @@ contract Token{
 
     mapping(address => uint256) public balanceOf;
 
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
     constructor(string memory _name, string memory _sym,uint256 _amount){
         name = _name;
         symbol = _sym;
         totalSupply = _amount * decimals;
-        transfer(msg.sender, totalSupply);
-      //  balanceOf[msg.sender] = totalSupply;
+      //  transfer(msg.sender, totalSupply);
+        balanceOf[msg.sender] = totalSupply;
     }
 
-    function transfer(address _to, uint256 _value) public{
-        require(totalSupply >= _value, "not enough funds to go around, cowboy!");
+    function transfer(address _to, uint256 _value) public returns(bool success){
+        require(balanceOf[msg.sender] >= _value, "not enough funds to go around, cowboy!");
+        require(_to != address(0));
+        emit Transfer(msg.sender, _to, _value);
+
+        balanceOf[msg.sender] -= _value;
         balanceOf[_to] += _value;
+        return success = true;
     }
 }
