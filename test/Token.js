@@ -49,28 +49,28 @@ describe("Token", ()=>{
         
     })
 
-    describe("transfer Tokens", () =>{
+    describe("Transfer Tokens", () =>{
         let amount, transaction, result;
        
         beforeEach(async() => {
             amount = tokens("1000");
 
             //call transfer function.. uses default account
+            // use a different account 
+            // token.connect('address').transfer(...)
             transaction = await token.transfer(accounts[1].address , amount);
             
             //transaction.wait() zorgt ervoor dat je de receipt krijgt
             result = await transaction.wait();
-            
-            // use a different account 
-            // token.connect('address').transfer(...)
+
         })
-        describe("success",() => {
+        describe("Success",() => {
             it("transfers Tokens",async ()=>{
                 //check if token got sent
                 assert.equal(await token.balanceOf(accounts[1].address), amount);
                 assert.equal(await token.balanceOf(accounts[0].address), tokens(1000000 - 1000));
-                console.log("receiver: " + (await token.balanceOf(accounts[1].address)));
-                console.log("sender: " + (await token.balanceOf(accounts[0].address)));
+           //     console.log("receiver: " + (await token.balanceOf(accounts[1].address)));
+           //     console.log("sender: " + (await token.balanceOf(accounts[0].address)));
             })
     
             it("emits an event", async () => {
@@ -94,9 +94,9 @@ describe("Token", ()=>{
         })
 
     })
+
     describe("Approval of transfer", () => {
-        let amount, transaction, result;
-        let exchangeAdr;
+        let amount, transaction, result, exchangeAdr;
         amount = tokens(100000);
         
         beforeEach(async () =>{
@@ -131,6 +131,52 @@ describe("Token", ()=>{
                 await expect(token.approve(exchangeAdr, wrongAmount)).to.be.reverted;
             })
             
+        })
+    })
+
+    describe("Transfer tokens from account that gave permission", () => {
+        let approve, transaction, result, amount;
+        let owner, spender, receiver;
+        
+        beforeEach(async () =>{
+            amount = tokens(100000);
+            // owner = accounts[0]; // receiver = accounts[1]; // spender = accounts[2];
+            [owner, receiver, spender] = accounts;   
+
+            //connect() gebruikt het account.. dus niet address!!
+            approve = await token.connect(owner).approve(spender.address, amount);
+        })
+
+        describe("Success", () =>{
+            beforeEach(async () =>{
+                transaction = await token.connect(spender).transferFrom(owner.address,receiver.address,amount);
+                result = await transaction.wait();
+            })
+
+            it("has transferred tokens", async ()=> {
+                assert.equal(await token.balanceOf(receiver.address),amount);
+                assert.equal(await token.balanceOf(owner.address), tokens(1000000) - amount);
+            })
+            it("emits event", async ()=> {
+              //  console.log(result.events[0].args);
+                assert.equal(result.events[0].args._from, owner.address);
+                assert.equal(result.events[0].args._to, receiver.address);
+                assert.equal(result.events[0].args._value, amount);
+            })
+
+        })
+        describe("Failure", () =>{
+            it("reverts call when amount is higher than allowance", async()=> {
+                await expect(token.connect(spender).transferFrom(owner.address,receiver.address, tokens(200000))).to.be.reverted;
+            })
+            /*
+            it("reverts when amount is higher than owner balance", async() => {
+                await expect(token.connect(spender).transferFrom(owner.address,receiver.address, tokens(1000001))).to.be.reverted;
+            })
+            */
+            it("reverts call on invalid address", async() => {
+                await expect(token.transferFrom(owner.address, "0x0000000000000000000000000000000000000000", amount)).to.be.reverted;
+            })
         })
     })
 })

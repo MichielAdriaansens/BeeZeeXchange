@@ -26,16 +26,27 @@ contract Token{
     function transfer(address _to, uint256 _value) public returns(bool success){
         require(balanceOf[msg.sender] >= _value, "not enough funds to go around, cowboy!");
         require(_to != address(0));
-        emit Transfer(msg.sender, _to, _value);
 
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+        _transfer(msg.sender, _to, _value);
         return success = true;
+    }
+
+    function _transfer(address _from, address _to, uint256 _value) internal {
+        emit Transfer(_from, _to, _value);
+        balanceOf[_from] -= _value;
+        balanceOf[_to] += _value;
     }
 
     //transfer_from function
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success){
-   
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
+        require(_to != address(0));
+        
+        //allowance wordt lager
+        allowance[_from][msg.sender] -= _value;
+        _transfer(_from, _to,_value);
+        
         return true;
     }
     //approval for transferFrom function 
@@ -43,6 +54,7 @@ contract Token{
         require(_spender != address(0));
         require(_value <= balanceOf[msg.sender]);
         emit Approval(msg.sender, _spender, _value);
+        
         allowance[msg.sender][_spender] = _value;
         return true;
     }
