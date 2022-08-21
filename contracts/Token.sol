@@ -39,8 +39,8 @@ contract Token{
 
     //transfer_from function
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool success){
-        require(_value <= balanceOf[_from]);
-        require(_value <= allowance[_from][msg.sender]);
+        require(_value <= balanceOf[_from], "insufficient funds");
+        require(_value <= allowance[_from][msg.sender], "isufficient allowance");
         require(_to != address(0));
         
         //allowance wordt lager
@@ -51,8 +51,8 @@ contract Token{
     }
     //approval for transferFrom function 
     function approve(address _spender, uint256 _value) public returns(bool success){
-        require(_spender != address(0));
-        require(_value <= balanceOf[msg.sender]);
+        require(_spender != address(0), "address does not exist");
+        require(_value <= balanceOf[msg.sender], "not enough tokens");
         emit Approval(msg.sender, _spender, _value);
         
         allowance[msg.sender][_spender] = _value;
