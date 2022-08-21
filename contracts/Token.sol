@@ -25,7 +25,7 @@ contract Token{
 
     function transfer(address _to, uint256 _value) public returns(bool success){
         require(balanceOf[msg.sender] >= _value, "not enough funds to go around, cowboy!");
-        require(_to != address(0));
+        require(_to != address(0), "incorrect address");
 
         _transfer(msg.sender, _to, _value);
         return success = true;

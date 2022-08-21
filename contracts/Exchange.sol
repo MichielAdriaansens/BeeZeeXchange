@@ -15,7 +15,7 @@ contract Exchange{
     }
 
     event Deposit (address token, address user, uint256 amount, uint256 balance);
-    
+    event Withdraw(address token, address user, uint256 amount, uint256 balance);
     //tokenaddress / useraddress => balance
     mapping(address => mapping(address => uint256)) public tokenBalance;
 
@@ -27,11 +27,20 @@ contract Exchange{
         emit Deposit(_token, msg.sender , _amount, tokenBalance[_token][msg.sender]);
     }
 
+    //withdraw Tokens
+    function withdrawToken(address _token, uint256 _amount) public {
+        require(_amount <= tokenBalance[_token][msg.sender], "withdraw failed, not enough funds!");
+        //decrease balance
+        tokenBalance[_token][msg.sender] -= _amount;
+        //transfer tokens to address
+        Token(_token).transfer(msg.sender, _amount);
+        //emit event
+        emit Withdraw(_token, msg.sender, _amount, tokenBalance[_token][msg.sender]);
+    }
+
     function balanceOf(address _token, address _user) public view returns(uint256){
         return tokenBalance[_token][_user];
     }
-
-    //withdraw Tokens
 
     //make orders
     //fill orders
