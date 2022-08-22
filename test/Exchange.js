@@ -21,6 +21,7 @@ describe("Exchange", ()=>{
 
         const Token = await ethers.getContractFactory("Token");
         token1 = await Token.connect(deployer).deploy("BitConnect", "BCC", tokens(10000));
+        token2 = await Token.connect(user1).deploy("HipBTC", "HIP", tokens(10000) );
     })
 
     describe("Deployment",() => {
@@ -135,6 +136,47 @@ describe("Exchange", ()=>{
            assert.equal(userBalance, amount);
         })
 
+    })
+
+    describe("Place order", () => {
+        let transaction, result;
+        let amount = tokens(100);
+
+        beforeEach(async () => {
+            await token1.approve(exchange.address, amount);
+            await exchange.depositToken(token1.address, amount);
+        })
+        
+        describe("Success", () => {
+            beforeEach(async () => {
+
+                transaction = await exchange.connect(deployer).makeOrder(token2.address, tokens(20), token1.address, tokens(20));
+                result = await transaction.wait();
+            })
+
+            it("tracks amount of orders", async ()=> {
+                assert.equal(await exchange.orderCount(), 1);
+            })
+
+            it("emits an event", async () => {
+                let args = result.events[0].args;
+                
+                assert.equal(await result.events[0].event, "Order");
+               // console.log(args);
+                assert.equal(await args.id, 1);
+                assert.equal(await args.tokenGet,token2.address);
+                assert.equal(await args.amountGet, tokens(20));
+                assert.equal(await args.tokenGive, token1.address);
+                assert.equal(await args.amountGive, tokens(20));
+                expect(await args.timeStamp).to.at.least(1);
+            })
+        })
+        describe("Fail", () => {
+            it("reverts when balance is insufficient", async () => {
+                await expect(exchange.connect(deployer).makeOrder(token2.address, tokens(20), token1.address, amount + tokens(20))).to.be.reverted;
+            })
+
+        })
     })
 
 })
