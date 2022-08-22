@@ -179,4 +179,50 @@ describe("Exchange", ()=>{
         })
     })
 
+    describe("Order actions", () => {
+        let transaction, result, bullshit;
+        let amount = tokens(10);
+
+        beforeEach(async() => {
+            await token1.connect(deployer).approve(exchange.address, amount);
+            await exchange.connect(deployer).depositToken(token1.address, amount);
+            bullshit = await exchange.connect(deployer).makeOrder(token2.address, amount, token1.address, amount);
+        })
+        
+        describe("Cancel Orders", () => {
+            describe("Success", () => {
+                beforeEach(async () => {
+                    transaction = await exchange.connect(deployer).cancelOrder(1);
+                    result = await transaction.wait();
+                })
+                it("updates cancelled orders", async () =>{
+                    assert.equal(await exchange.ordersIdCancelled(1), true);
+                })
+                it("emits event", async () => {
+                    let args = result.events[0].args;
+                
+                    assert.equal(result.events[0].event, "Cancel");
+                   // console.log(args);
+                    assert.equal(args.id, 1);
+                    assert.equal(args.tokenGet,token2.address);
+                    assert.equal(args.amountGet,amount);
+                    assert.equal(args.tokenGive, token1.address);
+                    assert.equal(args.amountGive, amount);
+                    expect(args.timeStamp).to.at.least(1);
+                })
+    
+            })
+            describe("Fail", () => {
+                it("reverts false id input", async () => {
+                    const invalidId = 0;
+                    await expect(exchange.cancelOrder(invalidId)).to.be.reverted;  
+                })
+                it("reverts when invalid user cancels order", async() =>{
+                    await expect(exchange.connect(user1).cancelOrder(1)).to.be.reverted;
+                })
+            })
+        })
+
+    })
+
 })

@@ -26,12 +26,23 @@ contract Exchange{
         uint256 amountGive,
         uint256 timeStamp
     );
+    event Cancel(
+        uint256 id,
+        address user, 
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        uint256 timeStamp
+    );
     
     //tokenaddress / useraddress => balance
     mapping(address => mapping(address => uint256)) public tokenBalance;
     
     //key is order's id
-    mapping(uint256 => _Order) orderList;
+    mapping(uint256 => _Order) public orderList;
+
+    mapping(uint256 => bool) public ordersIdCancelled;
 
     struct _Order {
         uint256 id;
@@ -92,10 +103,29 @@ contract Exchange{
         );
 
     }
-    
-    //fill orders
     //cancel orders
+    function cancelOrder(uint256 _id) public {
+        //make a struct variable and retreive order
+        _Order storage _order = orderList[_id];
 
+        require(address(_order.user) == msg.sender, "you are not allowed to cancel this order");
+        require(_order.id != 0);
+        require(_order.id == _id, "Order does not exist!");
+        require(ordersIdCancelled[_id] == false, "Order has allready been cancelled");
+
+        ordersIdCancelled[_id] = true;
+        emit Cancel(
+            _order.id,
+            _order.user, 
+            _order.tokenGet,
+            _order.amountGet,
+            _order.tokenGive,
+            _order.amountGive,
+            _order.timeStamp
+        );
+    }
+    //fill orders
+    
     //charge fees
     
 }

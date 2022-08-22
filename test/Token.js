@@ -12,13 +12,13 @@ describe("Token", ()=>{
     beforeEach(async ()=>{
         //fetch the Token Contract
         const Token = await ethers.getContractFactory("Token") //dit is een referentie naar het Contract.
-        token = await Token.deploy("NiggaToken","NT",1000000) //om goed te testen moet je het contract eerst deployen. 
+        token = await Token.deploy("BitConnect","BCC",1000000) //om goed te testen moet je het contract eerst deployen. 
         accounts = await ethers.getSigners();
     })
 
     describe("Deployment",() => {
-        const name = "NiggaToken"
-        const symbol = "NT"
+        const name = "BitConnect"
+        const symbol = "BCC"
         const decimal = 10**18
         const tSupply = tokens(1000000)
 
@@ -135,7 +135,7 @@ describe("Token", ()=>{
     })
 
     describe("Transfer tokens from account that gave permission", () => {
-        let approve, transaction, result, amount;
+        let transaction, result, amount;
         let owner, spender, receiver;
         
         beforeEach(async () =>{
