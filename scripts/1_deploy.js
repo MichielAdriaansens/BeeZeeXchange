@@ -4,17 +4,34 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
+const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
 async function main() {
+  console.log(`preparing deployment... .. ... \n`);
   //fetch contract to deploy
   const Token = await hre.ethers.getContractFactory("Token");
+  const Exchange = await hre.ethers.getContractFactory("Exchange");
+
+  const accounts = await ethers.getSigners();
+  console.log(`accounts fetched: \n ${accounts[0].address}\n ${accounts[1].address}\n`);
 
   //deploy contract
-  const token = await Token.deploy();
-  await token.deployed();
+  const exchange = await Exchange.deploy(accounts[1].address, 10);
+  await exchange.deployed();
+  console.log(`exchange deployed, address: ${exchange.address}`);
+  
+  const BCC = await Token.deploy("BitConnect","BCC",1000000);
+  await BCC.deployed();
+  console.log(`BitConnect Coin 'BCC' token adres: ${BCC.address}`);
 
-  console.log(`Token deployed to adres: ${token.address}`);
+  const HIP = await Token.deploy("HipBTC", "HIP", 1000000);
+  await HIP.deployed();
+  console.log(`HipBTC 'HIP' token adres: ${HIP.address}`);
+
+  const FAC = await Token.deploy("Falcon Coin", "FAC", 1000000);
+  await FAC.deployed();
+  console.log(`Falcon Coin 'FAC' token adres: ${FAC.address}`);
 
   //run script and deploy on the blockchain use command line: npx hardhat  run --network localhost ./scripts/1_deploy.js
 
