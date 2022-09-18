@@ -18,7 +18,7 @@ function Navbar(){
         await loadAccount(provider, dispatch);
     }
     async function networkHandler(event){
-        console.log("switch up! ", event.target.value);
+       // console.log("switch up! ", event.target.value);
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{chainId: event.target.value}] 
@@ -35,13 +35,13 @@ function Navbar(){
         <div className='exchange__header--networks flex'>
             <img src={ethLogo} alt="ethlogo"/>
 
-            {chainId && (
-                <select name="networks" id="networks" value={config[chainId]? `0x${chainId.toString(16)}` : "0"} onChange={networkHandler}>
-                <option value={0} disabled>select network</option>
-                <option value="0x7A69">local host</option>
-                <option value="0x2a">Kovan</option>
-            </select>
-            )}
+                {chainId && (
+                    <select className="networks" id="networks" value={config[chainId]? `0x${chainId.toString(16)}` : "0"} onChange={networkHandler}>
+                        <option value={0} disabled>select network</option>
+                        <option value="0x7A69">local host</option>
+                        <option value="0x2a">Kovan</option>
+                    </select>
+                )}
 
         </div>
   
