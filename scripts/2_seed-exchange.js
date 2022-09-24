@@ -56,6 +56,11 @@ async function main(){
     
     //Deposit tokens to exchange
     console.log(`\nDeposit Token to exchange`);
+
+    await bcc.connect(deployer).approve(exchange.address, tokens(1500));
+    await exchange.connect(deployer).depositToken(bcc.address, tokens(1500));
+    console.log(` deployer deposited ${tokens(1500)} BCC to exchange`);
+
     await bcc.connect(user1).approve(exchange.address, amount);
     console.log(` Approved ${amount} tokens from: ${user1.address}`);
     

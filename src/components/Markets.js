@@ -7,7 +7,7 @@ function Markets(){
     const chainId = useSelector(state => state.provider.chainId);
     const dispatch = useDispatch();
 
-    async function maretHandler(event){
+    async function marketHandler(event){
        
         let addresses = (event.target.value).split(",");
         
@@ -23,7 +23,7 @@ function Markets(){
           </div>
             {
                 chainId && config[chainId]? 
-                    <select className="markets" id="markets" onChange={maretHandler}>
+                    <select className="markets" id="markets" onChange={marketHandler}>
                         <option value={`${config[chainId].BCC.address},${config[chainId].HIP.address}`}>BCC / HIP</option>
                         <option value={`${config[chainId].BCC.address},${config[chainId].FAC.address}`}>BCC / FAC</option>
                     </select>
