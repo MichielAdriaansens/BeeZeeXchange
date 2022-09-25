@@ -58,17 +58,28 @@ function Balance(){
   function depositHandler(event, token){
     event.preventDefault();
     if(token.address === tokens[0].address){
-      transferTokens(provider,token1TransferAmount,token,exchange, dispatch);
+      transferTokens(provider,token1TransferAmount,token,exchange,'Deposit', dispatch);
       setToken1TransferAmount(0);
     }
     else if(token.address === tokens[1].address){
-      transferTokens(provider,token2TransferAmount,token,exchange, dispatch);
+      transferTokens(provider,token2TransferAmount,token,exchange,'Deposit', dispatch);
       setToken2TransferAmount(0);
     }
   }
 
   function withdrawHandler(event, token){
     event.preventDefault();
+
+    if(token.address === tokens[0].address){
+      
+      transferTokens(provider,token1TransferAmount,token,exchange,'Withdraw', dispatch);
+      setToken1TransferAmount(0);
+    }
+    else if(token.address === tokens[1].address){
+      
+      transferTokens(provider,token2TransferAmount,token,exchange,'Withdraw', dispatch);
+      setToken2TransferAmount(0);
+    }
   }
 
   return (
