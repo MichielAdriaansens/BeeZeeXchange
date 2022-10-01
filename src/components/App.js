@@ -11,13 +11,15 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
-  subscribeToEvents
+  subscribeToEvents,
+  loadAllOrders
 } from '../store/interactions';
 
 import Navbar from './Navbar';
 import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
+import OrderBook from './OrderBook';
 
 function App() {
 
@@ -54,6 +56,9 @@ function App() {
     console.log("Exchange adress: ", exchange.address);
     console.log('Exchange feeAccount adr: ',await exchange.feeAccount())
 
+    //loading all orders made
+    await loadAllOrders(provider,exchange, dispatch);
+
     //event Listener
     subscribeToEvents(exchange, dispatch)
   }
@@ -87,6 +92,7 @@ function App() {
           {/* Trades */}
 
           {/* OrderBook */}
+          <OrderBook/>
 
         </section>
       </main>

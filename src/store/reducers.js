@@ -80,7 +80,32 @@ export function exchange(state = DEFAULT_EXCHANGE_STATE,action){
         loaded: true,
         contract: action.exchange
       }
-
+    //Orders
+    case 'CANCELLED_ORDERS_LOADED':
+      return{
+        ...state,
+        cancelledOrders: {
+          loaded: true,
+          data: action.cancelledOrders
+        }
+      }  
+    case 'FILLED_ORDERS_LOADED':
+      return{
+        ...state,
+        filledOrders: {
+          loaded: true,
+          data: action.filledOrders
+        }
+      }
+    case 'ALL_ORDERS_LOADED':
+      return{
+        ...state, //vergeet ...state niet Iterable error in console krijg je anders
+        allOrders: {
+        loaded: true,
+        data: action.allOrders
+        }
+      }
+    //Balances
     case 'EXCHANGE_TOKEN_1_BALANCE_LOADED':
       return{
         ...state,
@@ -136,7 +161,7 @@ export function exchange(state = DEFAULT_EXCHANGE_STATE,action){
       }
     case 'NEW_ORDER_SUCCES':
       //prevent duplicate orders
-      index = state.allOrders.data.findIndex(order => order.id === action.orderId);
+      index = state.allOrders.data.findIndex(order => order.id.toString() === action.order.id.toString());
 
       if(index === -1){
         data = [...state.allOrders.data, action.order];

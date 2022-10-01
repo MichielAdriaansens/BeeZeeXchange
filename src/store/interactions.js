@@ -153,3 +153,25 @@ export async function makeSellOrder(provider, exchange, tokens, order, dispatch)
         dispatch({type: 'NEW_ORDER_FAIL'});
     };
 }
+export async function loadAllOrders(provider, exchange, dispatch){
+    const block = await provider.getBlockNumber();
+
+    //get cancelled orders.. searching the 'Cancel' event
+    const cancelStream = await exchange.queryFilter('Cancel', 0, block);
+    const cancelledOrders = await cancelStream.map(event => event.args);
+
+    dispatch({type:'CANCELLED_ORDERS_LOADED', cancelledOrders});
+
+    //get Filled Orders
+    const tradeStream = await exchange.queryFilter('Trade', 0, block);
+    const filledOrders = await tradeStream.map(event => event.args);
+    
+    dispatch({type: 'FILLED_ORDERS_LOADED', filledOrders});
+
+    //get Orders
+    //queryFilter retrieves all Order events from 0 to block.. wich is current block
+    const orderStream = await exchange.queryFilter('Order', 0, block);
+    const allOrders = await orderStream.map(event => event.args);
+
+    dispatch({type: 'ALL_ORDERS_LOADED', allOrders});
+}
