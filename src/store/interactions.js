@@ -58,7 +58,7 @@ export async function loadExchange(address, provider, dispatch){
 
 export async function loadBalances(exchange,account,tokens,dispatch){
 
-    console.log(tokens);
+    //console.log(tokens);
 
     let balance = await tokens[0].balanceOf(account);
     balance = ethers.utils.formatUnits(balance, 18);

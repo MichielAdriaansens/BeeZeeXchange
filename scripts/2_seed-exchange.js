@@ -46,6 +46,7 @@ async function main(){
     console.log(` token approval from: ${deployer.address}\n to: \n ${user1.address}\n ${user2.address}`)
     await bcc.connect(deployer).approve(user1.address, amount);
     await hip.connect(deployer).approve(user2.address, amount);
+    await hip.connect(deployer).approve(user1.address, tokens(500));
 
     console.log(`\nTransferring tokens to users... `)
     await bcc.connect(deployer).transfer(user1.address, amount);
@@ -53,7 +54,10 @@ async function main(){
     
     await hip.connect(deployer).transfer(user2.address, amount);
     console.log(` user2 received ${amount} HIP tokens`);
-    
+
+    await hip.connect(deployer).transfer(user1.address, tokens(500));
+    console.log(` user1 received ${amount} FAC tokens`);
+
     //Deposit tokens to exchange
     console.log(`\nDeposit Token to exchange`);
 
@@ -63,13 +67,19 @@ async function main(){
 
     await bcc.connect(user1).approve(exchange.address, amount);
     console.log(` Approved ${amount} tokens from: ${user1.address}`);
-    
+
+    await hip.connect(user1).approve(exchange.address, tokens(500));
+    console.log(` Approved ${tokens(500)} tokens from: ${user1.address}`);
+
     await hip.connect(user2).approve(exchange.address, amount);
     console.log(` Approved ${amount} tokens from: ${user2.address}`);
 
     await exchange.connect(user1).depositToken(bcc.address, amount);
     console.log(` user1 deposited ${amount} BCC to exchange`);
-    
+
+    await exchange.connect(user1).depositToken(hip.address, tokens(500));
+    console.log(` user1 deposited ${tokens(500)} BCC to exchange`);
+
     await exchange.connect(user2).depositToken(hip.address, amount);
     console.log(` user2 deposited ${amount} HIP to exchange\n`);
 
@@ -93,7 +103,7 @@ async function main(){
     await wait(1);
     console.log(3);
 
-    //Make another order 
+    //Make and filling order 
     console.log(`\nMaking order #2`);
     transaction = await exchange.connect(user1).makeOrder(hip.address, tokens(50), bcc.address, tokens(15));
     result = await transaction.wait();
@@ -101,7 +111,7 @@ async function main(){
 
     console.log(`\nFilling order...`);
     await exchange.connect(user2).fillOrder(result.events[0].args.id);
-    console.log(` order filled by ${user2.address}`);
+    console.log(` order #2 filled by ${user2.address}`);
 
     await wait(1);
 
@@ -112,7 +122,19 @@ async function main(){
 
     console.log(`\nFilling order...`);
     await exchange.connect(user1).fillOrder(result.events[0].args.id);
-    console.log(` order filled by ${user1.address}\n`);
+    console.log(` order #3 filled by ${user1.address}\n`);
+
+    await wait(1);
+
+    console.log(`\nMaking order #4`);
+    transaction = await exchange.connect(deployer).makeOrder(hip.address , tokens(250), bcc.address, tokens(100));
+    result = await transaction.wait();
+    console.log(` ${deployer.address} placed an order`);
+
+    await wait(0.5);
+
+    await exchange.connect(user1).fillOrder(result.events[0].args.id);
+    console.log(` order #4 filled by ${user1.address}\n`)
 
     await wait(1);
     /// Seed Orders

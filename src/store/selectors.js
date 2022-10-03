@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { get, groupBy, reject } from "lodash";
+import { get, groupBy, reject, maxBy,minBy } from "lodash";
 import { ethers } from "ethers";
 import moment from "moment";
 
@@ -20,6 +20,7 @@ const openOrders = state => {
    const openOrders = reject(all, (order) => {
       const orderFilled = filled.some((o) => o.id.toString() === order.id.toString());
       const orderCancelled = cancelled.some((o) => o.id.toString() === order.id.toString());
+
       return (orderFilled || orderCancelled); 
    })
 
@@ -32,8 +33,8 @@ export const OrderBookSelector = createSelector(openOrders, tokens, (orders, tok
    if(!tokens[0] || !tokens[1]) {return};
 
    //filter out the tokens that is equal to order.tokenGet/give
-   orders = orders.filter((order) => {return order.tokenGet === tokens[0].address || order.tokenGet === tokens[1].address});
-   orders = orders.filter((order) => {return order.tokenGive === tokens[0].address || order.tokenGive === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
    
    orders = decorateOrderBookOrders(orders, tokens);
    
@@ -41,6 +42,7 @@ export const OrderBookSelector = createSelector(openOrders, tokens, (orders, tok
    orders = groupBy(orders, 'orderType');
 
    //lodash's get zoekt naar onderdelen van array selecteert ze op basis van 'buy' en slaat het op  in een array
+   //en anders returned het een empty array
    const buyOrders = get(orders,'buy', []);
    const sellOrders = get(orders,'sell', []); 
 
@@ -107,4 +109,58 @@ function _decorateOrderBookOrder(order, tokens){
       orderTypeClass:( orderType === 'buy'? GREEN : RED),
       orderFillAction: (orderType === 'buy'? 'sell' : 'buy') 
    }
+}
+
+//-----------------
+//Price Chart selector
+export const priceChartSelector = createSelector(filledOrders, tokens, (orders, tokens) => {
+   if(!tokens[0] || !tokens[1]){return};
+   
+   orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
+   
+   orders.sort((a, b) => a.timeStamp - b.timeStamp);
+
+   orders = orders.map((o) => decorateOrder(o, tokens));
+
+   const lastOrder = [orders[orders.length -1], orders[orders.length -2]];
+   let lastprice = get(lastOrder[0], 'tokenPrice', 0); //alternatief: lastOrder? lastOrder.tokenPrice : '0';
+   let secondLastPrice = get(lastOrder[1], 'tokenPrice', 0);
+   console.log(secondLastPrice);
+   
+   return({
+      lastprice: lastprice,
+      priceChange: (lastprice >= secondLastPrice? '+' : '-'),
+      series : [{
+         data: buildGraphData(orders)
+      }]
+   }) 
+})
+
+function buildGraphData(orders){
+   //groupBy devides an array.. by the hour of an order's timeStamp value.
+   //Note: the newly created array will adopt the name of the value used to devide the prior array with.
+   //..in this case the timeStamp.  
+   orders = groupBy(orders, (o) => moment.unix(o.timeStamp).startOf('hour').format())
+
+   //returns array of the keys(instead of the values attached to the key)
+   const hours = Object.keys(orders);
+
+   const graphData = hours.map((hour) => {
+
+      //stores all orders with corresponding hour
+      const group = orders[hour];
+
+      //sort first last order and lowest and highest token price
+      const open = group[0];
+      const high = maxBy(group, 'tokenPrice');
+      const low = minBy(group, "tokenPrice");
+      const close = group[group.length -1];
+
+      return ({
+         x: new Date(hour),
+         y: [open.tokenPrice, high.tokenPrice, low.tokenPrice, close.tokenPrice]
+      })
+   })
+   return graphData;
 }
