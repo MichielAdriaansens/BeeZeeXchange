@@ -23,13 +23,13 @@ function Markets(){
           </div>
             {
                 chainId && config[chainId]? 
-                    <select className="markets" id="markets" onChange={marketHandler}>
+                    (<select className="markets" id="markets" onChange={marketHandler}>
                         <option value={`${config[chainId].BCC.address},${config[chainId].HIP.address}`}>BCC / HIP</option>
                         <option value={`${config[chainId].BCC.address},${config[chainId].FAC.address}`}>BCC / FAC</option>
-                    </select>
+                    </select>)
                     :
                     <select>
-                        <option>Not connected</option>
+                        (<option>Not connected</option>)
                     </select>
             }
 

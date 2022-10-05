@@ -62,7 +62,7 @@ const decorateOrder = (order , tokens) =>{
    let token0amount, token1amount, tokenPrice;
 
    //BCC = token0amount, HIP = token1 amount
-   if(tokens[1].address === order.tokenGive){
+   if(tokens[0].address === order.tokenGive){
       //formatUnits geeft decimal punt aan.. toString doet dat niet
 
       token0amount = ethers.utils.formatUnits(order.amountGive, 'ether'); //'ether' = 18 ivbm decimals 
@@ -93,7 +93,7 @@ export function decorateOrderBookOrders(orders, tokens){
          order = decorateOrder(order, tokens);
          order = _decorateOrderBookOrder(order, tokens);
          
-         //console.log(order);
+        // console.log('orderBookOrders',order);
          return order;
       })
    )
@@ -110,7 +110,63 @@ function _decorateOrderBookOrder(order, tokens){
       orderFillAction: (orderType === 'buy'? 'sell' : 'buy') 
    }
 }
+//-------------
+//All Filled Orders
+export const filledOrdersSelector = createSelector(filledOrders, tokens, (orders, tokens) => {
+   if(!tokens[0] || !tokens[1]){return};
 
+   //filter orders by the selected tokens (Market component)
+   orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
+
+   //sort ascending for correct comparison price 'previousOrder' 
+   orders = orders.sort((a,b) => {return (a.timeStamp - b.timeStamp)});
+
+   //decorate orders
+   orders = decorateFilledOrders(orders,tokens);
+
+   //sort descending for UI display
+   orders = orders.sort((a,b) => {return (b.timeStamp - a.timeStamp)});
+
+   //console.log('filledOrderSelector orders', orders);
+
+   return orders;
+})
+
+function decorateFilledOrders(orders, tokens){
+   let previousOrder = orders[0];
+ 
+   return(
+      orders.map(order => {
+        
+         order = decorateOrder(order,tokens);
+
+         order = _decorateFilledOrder(order, previousOrder);
+         
+         previousOrder = order;
+
+         return order;
+      })
+   )
+}
+function _decorateFilledOrder(order,previousOrder){
+   
+   return ({
+      ...order,
+      orderPriceClass: orderPriceClass(order,previousOrder)
+   });
+}
+
+function orderPriceClass(order,previousOrder){
+   if(order.id === previousOrder.id){
+      return GREEN
+   }
+   else{
+      return order.tokenPrice >= previousOrder.tokenPrice? GREEN : RED
+   }
+}
+
+//!!!BONUS!!! Fix dat je meerdere opties hebt voor candle stick.. ipv hours dus days en weeks en months
 //-----------------
 //Price Chart selector
 export const priceChartSelector = createSelector(filledOrders, tokens, (orders, tokens) => {
@@ -126,7 +182,7 @@ export const priceChartSelector = createSelector(filledOrders, tokens, (orders, 
    const lastOrder = [orders[orders.length -1], orders[orders.length -2]];
    let lastprice = get(lastOrder[0], 'tokenPrice', 0); //alternatief: lastOrder? lastOrder.tokenPrice : '0';
    let secondLastPrice = get(lastOrder[1], 'tokenPrice', 0);
-   console.log(secondLastPrice);
+  // console.log(secondLastPrice);
    
    return({
       lastprice: lastprice,
