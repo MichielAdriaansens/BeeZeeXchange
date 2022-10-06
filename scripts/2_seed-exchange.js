@@ -138,6 +138,16 @@ async function main(){
 
     await wait(1);
     /// Seed Orders
+    //make 10 orders from deployer
+    console.log(`\nMake 10 orders from user 1...`);
+    for(let i = 1; i<=10; i++ ){
+        await exchange.connect(deployer).makeOrder(hip.address, tokens(10 * i), bcc.address, tokens(10));
+        await wait(1);
+        
+        console.log(` made order from ${deployer.address}`);
+    }
+
+    /*
     //make 10 orders from user 1
     console.log(`\nMake 10 orders from user 1...`);
     for(let i = 1; i<=10; i++ ){
@@ -146,6 +156,7 @@ async function main(){
         
         console.log(` made order from ${user1.address}`);
     }
+    */
    //make 10 orders from user 2
     console.log(`\nMake 10 orders from user 2...`);
     for(let i = 1; i<=10; i++ ){

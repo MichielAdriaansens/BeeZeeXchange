@@ -3,6 +3,7 @@ import { get, groupBy, reject, maxBy,minBy } from "lodash";
 import { ethers } from "ethers";
 import moment from "moment";
 
+const account = state => get(state, 'provider.account');
 const tokens = state => get(state, 'tokens.contracts');
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', []);
@@ -26,7 +27,44 @@ const openOrders = state => {
 
    return openOrders;
 }
+//---------------
+//My open Orders
+export const myOpenOrdersSelector = createSelector(openOrders, tokens, account, (orders, tokens, account) => {
+   if(!account || !tokens[0] || !tokens[1]) {return};
 
+   //filter by current account
+   orders = orders.filter((o) => {return o.user === account });
+
+   //filter orders by the selected tokens (Market component)
+   orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
+
+   orders = decorateMyOpenOrders(orders, tokens);
+
+   orders = orders.sort((a,b) => {return b.timeStamp - a.timeStamp})
+
+   return orders;
+})
+
+function decorateMyOpenOrders(orders, tokens){
+   return (
+      orders.map((o) => {
+         o = decorateOrder(o,tokens);
+         o = _decorateMyOpenOrder(o, tokens);
+
+         return o;
+      })
+   )
+}
+function _decorateMyOpenOrder(order, tokens){
+   const orderType = order.tokenGive === tokens[1].address? 'buy' : 'sell';
+
+   return {
+      ...order,
+      orderType,
+      orderTypeClass: orderType === 'buy'? GREEN : RED
+   };
+}
 //OrderBook
 export const OrderBookSelector = createSelector(openOrders, tokens, (orders, tokens) => {
 
@@ -62,7 +100,7 @@ const decorateOrder = (order , tokens) =>{
    let token0amount, token1amount, tokenPrice;
 
    //BCC = token0amount, HIP = token1 amount
-   if(tokens[0].address === order.tokenGive){
+   if(tokens[1].address === order.tokenGive){
       //formatUnits geeft decimal punt aan.. toString doet dat niet
 
       token0amount = ethers.utils.formatUnits(order.amountGive, 'ether'); //'ether' = 18 ivbm decimals 
@@ -80,7 +118,7 @@ const decorateOrder = (order , tokens) =>{
       token0amount: token0amount,
       token1amount: token1amount,
       tokenPrice,     // is hetzelfde als tokenPrice: tokenPrice
-      formattedTimeStamp: moment.unix(order.timeStamp).format("h:mm:ssa DD MMMM YYYY")
+      formattedTimeStamp: moment.unix(order.timeStamp).format("h:mm:ssa DD MMMM")
    }
 }
 
