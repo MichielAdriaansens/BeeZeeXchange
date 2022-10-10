@@ -134,7 +134,17 @@ async function main(){
     await wait(0.5);
 
     await exchange.connect(user1).fillOrder(result.events[0].args.id);
-    console.log(` order #4 filled by ${user1.address}\n`)
+    console.log(` order #4 filled by ${user1.address}\n`);
+
+    await wait(1);
+
+    console.log(`\nMaking order #5`);
+    transaction = await exchange.connect(deployer).makeOrder(hip.address , tokens(30), bcc.address, tokens(10));
+    result = await transaction.wait();
+    console.log(` ${deployer.address} placed an order`);
+
+    await exchange.connect(user1).fillOrder(result.events[0].args.id);
+    console.log(` order #4 filled by ${user1.address}\n`);
 
     await wait(1);
     /// Seed Orders

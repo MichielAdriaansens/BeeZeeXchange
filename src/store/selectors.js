@@ -195,6 +195,53 @@ function _decorateFilledOrder(order,previousOrder){
    });
 }
 
+//-------------
+//My Filled orders
+
+export const myFilledOrderSelector = createSelector(account, tokens, filledOrders,(account, tokens,orders) =>{
+   if(!tokens[0] || !tokens[1]){return}
+
+   orders = orders.filter((o) => {return o.user === account || o.creator === account});
+
+   orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
+   orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
+
+   orders = orders.sort((a,b) => a.timeStamp - b.timeStamp);
+   
+   orders = decorateMyFilledOrders(orders, tokens, account);
+
+   orders = orders.sort((a,b) => b.timeStamp - a.timeStamp);
+   
+   return orders
+})
+
+function decorateMyFilledOrders(orders, tokens, account){
+   return (orders.map((order) => {
+
+      order = decorateOrder(order, tokens);
+      order = _decorateMyFilledOrder(order,tokens, account);
+      return order;
+   }))
+}
+
+function _decorateMyFilledOrder(order, tokens, account){
+   const myOrder = order.creator === account;
+
+   let orderType;
+   if(myOrder){
+      orderType = order.tokenGive === tokens[1].address? 'buy' : 'sell';
+   }
+   else{
+      orderType = order.tokenGive === tokens[1].address? 'sell' : 'buy';
+   }
+   return {
+      ...order, 
+      orderType,
+      orderTypeClass: (orderType === 'buy'? GREEN : RED),
+      orderSign: (orderType === 'buy'? '+' : '-')
+   };
+}
+
 function orderPriceClass(order,previousOrder){
    if(order.id === previousOrder.id){
       return GREEN

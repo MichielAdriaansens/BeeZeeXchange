@@ -19,7 +19,7 @@ function Trades(){
             <thead>
               <tr>
                 <th>Time <img src={sort} alt='sort' /></th>
-                <th>{symbols && symbols[1]}<img src={sort} alt='sort' /> </th>
+                <th>{symbols && symbols[0]}<img src={sort} alt='sort' /> </th>
                 <th>{symbols && symbols[0]}/{symbols && symbols[1]}<img src={sort} alt='sort' /> </th>
               </tr>
             </thead>
@@ -28,7 +28,7 @@ function Trades(){
               return(
                 <tr key={index}>
                   <td>{order.formattedTimeStamp}</td>
-                  <td style={{color: order.orderPriceClass}}>{order.token0amount}</td>
+                  <td style={{color: order.orderPriceClass}}>{order.token1amount}</td>
                   <td>{order.tokenPrice}</td>
                 </tr>
                 )
