@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { myOpenOrdersSelector, myFilledOrderSelector } from "../store/selectors";
+import { cancelOrder } from "../store/interactions";
 
 import sort from '../assets/sort.svg';
 import Banner from "./Banner";
@@ -9,9 +10,21 @@ function Transactions(){
     const [isOrdering,setIsOrdering] = useState(true);
     const myOpenOrders = useSelector(myOpenOrdersSelector);
     const myFilledOrders = useSelector(myFilledOrderSelector);
+    
+    const provider = useSelector(state => state.provider.connection);
+    const exchange = useSelector(state => state.exchange.contract);
     const symbols = useSelector(state => state.tokens.symbols);
+
+
     const ordersRef = useRef(null);
     const tradesRef = useRef(null);    
+
+    const dispatch = useDispatch();
+
+    function cancelHandler(order, provider, exchange ,dispatch){
+      //  console.log('Click: ', order);
+        cancelOrder(order,provider,exchange,dispatch);
+    }
 
     function tabHandler(event){
         if(event.target.className !== ordersRef.current.className){
@@ -55,7 +68,8 @@ function Transactions(){
                                         <tr key={index}>
                                             <td style={{color: o.orderTypeClass}}>{o.token0amount}</td>
                                             <td>{o.tokenPrice}</td>
-                                            <td>{/* Cancel Order Button*/}</td>
+                                            {/* de arrow function verzekerd dat de cancelHandler met () alleen gecalled wordt na een click */}
+                                            <td><button className='button--sm' onClick={() => {cancelHandler(o,provider,exchange,dispatch)}}>Cancel</button></td>
                                         </tr>
                                     )
                                 })}

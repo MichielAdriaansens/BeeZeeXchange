@@ -190,6 +190,45 @@ export function exchange(state = DEFAULT_EXCHANGE_STATE,action){
           isError: true
         }
       }
+    //Cancel Order
+    case 'CANCEL_ORDER_REQUEST':
+      return{
+        ...state,
+        transaction:{
+          transactionType: 'Cancel Order',
+          isPending: true,
+          isSuccesfull: false
+        }
+
+      }
+    case 'CANCEL_ORDER_SUCCESS':
+      return{
+        ...state,
+        transaction:{
+          transactionType: 'Cancel Order',
+          isPending: false,
+          isSuccesfull: true
+        },
+        cancelledOrders: {
+          ...state.cancelledOrders,
+          data: [
+            ...state.cancelledOrders.data,
+            action.order
+          ]
+        },
+        events: [action.event, ...state.events]
+      }
+    case 'CANCEL_ORDER_FAIL':
+      return{
+        ...state,
+        transaction:{
+          transactionType: 'Cancel Order',
+          isPending: false,
+          isSuccesfull: false,
+          isError: true
+        }
+        
+      }
     default: 
       return  state
   }
