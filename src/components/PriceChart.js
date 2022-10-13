@@ -30,12 +30,10 @@ function PriceChart(){
                 
                 {priceChart.priceChange === '+'? (<img src={upArrow} alt="Arrow up" />): (<img src={downArrow} alt="Arrow down" /> )}  
                  
-                
                 <span className='up'>{priceChart.lastprice}</span>
+
               </div>)
               }
-    
-
     
             </div>
           </div>

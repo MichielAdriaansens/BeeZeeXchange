@@ -22,7 +22,7 @@ function Transactions(){
     const dispatch = useDispatch();
 
     function cancelHandler(order, provider, exchange ,dispatch){
-      //  console.log('Click: ', order);
+       // console.log('cancel: ', order);
         cancelOrder(order,provider,exchange,dispatch);
     }
 

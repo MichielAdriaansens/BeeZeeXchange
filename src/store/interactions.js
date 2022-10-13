@@ -89,6 +89,11 @@ export function subscribeToEvents(exchange, dispatch){
         const order = event.args;
         dispatch({type: 'CANCEL_ORDER_SUCCESS', order, event});
     });
+    exchange.on('Trade', (id, user, tokenGet, amountGet, tokenGive, amountGive, creator, timeStamp, event) =>{
+        const order = event.args;
+        //je geeft de order en event variabelen door aan de reducer en roept ze op met action. let dus op gelijke benaming!!
+        dispatch({type: 'FILL_ORDER_SUCCESS', order, event});
+    });
 }
 
 //------------------
@@ -195,4 +200,19 @@ export async function cancelOrder(order, provider, exchange, dispatch){
     }
 
 
+}
+
+export async function fillOrder(order, provider, exchange, dispatch){
+    let transaction
+    dispatch({type: 'FILL_ORDER_REQUEST', transaction} );
+    
+    try{
+    let account = await provider.getSigner();
+
+    transaction = await exchange.connect(account).fillOrder(order.id);
+    await transaction.wait();
+    }catch(error){
+        console.error(`FAILED to fill order! \n`, error);
+        dispatch({type: 'FILL_ORDER_FAIL'});
+    }
 }

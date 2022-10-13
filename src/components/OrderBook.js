@@ -1,10 +1,19 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import sort from  '../assets/sort.svg';
 import { OrderBookSelector } from "../store/selectors";
+import { fillOrder } from "../store/interactions";
 
 function OrderBook(){
     const symbols = useSelector(state => state.tokens.symbols);
     const orderBook = useSelector(OrderBookSelector);
+    const provider = useSelector(state => state.provider.connection);
+    const exchange = useSelector(state => state.exchange.contract);
+    const dispatch = useDispatch();
+
+    function fillOrderHandler(order){
+        console.log('fill order', order);
+        fillOrder(order,provider,exchange, dispatch);
+    }
 
     return (
         <div className="component exchange__orderbook">
@@ -26,7 +35,7 @@ function OrderBook(){
                     </thead>
                     <tbody>
                     {orderBook && orderBook.sellOrders.map((order, index) => 
-                        <tr key={index}>
+                        <tr key={index} onClick={()=> fillOrderHandler(order)}>
                             <td >{order.token0amount}</td>
                             <td style={{color: order.orderTypeClass}}>{order.tokenPrice}</td>
                             <td >{order.token1amount}</td>
@@ -57,7 +66,7 @@ function OrderBook(){
                     </thead>
                     <tbody>
                     {orderBook && orderBook.buyOrders.map((order,index) => 
-                        <tr key={index}>
+                        <tr key={index} onClick={()=> fillOrderHandler(order)}>
                             <td>{order.token0amount}</td>
                             <td style={{color: order.orderTypeClass}}>{order.tokenPrice}</td>
                             <td>{order.token1amount}</td>
