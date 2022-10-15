@@ -52,7 +52,6 @@ function Balance(){
     if(token.address === tokens[1].address){
       setToken2TransferAmount(event.target.value);
     }
-   // console.log({token2TransferAmount});
   }
 
   function depositHandler(event, token){
@@ -129,7 +128,7 @@ function Balance(){
         </div>
 
         <form onSubmit={(e) => isDeposit? depositHandler(e, tokens[1]) : withdrawHandler(e, tokens[1])}>
-          <label htmlFor="token1"></label>
+          <label htmlFor="token1">{symbols && symbols[1]} Amount:</label>
           <input 
           type="text" 
           id='token1' 

@@ -39,7 +39,7 @@ function PriceChart(){
           </div>
     
           {/* Price chart goes here */}
-          {!account? (<Banner text= 'AE SWAAA waar is die ding man!'/>) 
+          {!account? (<Banner text= 'Connect your metamask account!'/>) 
           :
           (
             <Chart

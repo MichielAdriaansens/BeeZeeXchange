@@ -27,7 +27,7 @@ export async function loadAccount(provider, dispatch){
    dispatch({type: 'ACCOUNT_LOADED', account});
 
    const balance = ethers.utils.formatEther(await provider.getBalance(account)); 
-   console.log("account balance: ", balance);   
+   
    dispatch({type: 'BALANCE_LOADED', balance}); //belangerijk! de naam vd const moet overeenkomen met reducer objectnaam
 
    return account;

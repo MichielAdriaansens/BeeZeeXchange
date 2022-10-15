@@ -11,7 +11,7 @@ function OrderBook(){
     const dispatch = useDispatch();
 
     function fillOrderHandler(order){
-        console.log('fill order', order);
+        //console.log('fill order', order);
         fillOrder(order,provider,exchange, dispatch);
     }
 

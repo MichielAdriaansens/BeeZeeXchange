@@ -142,7 +142,7 @@ export function exchange(state = DEFAULT_EXCHANGE_STATE,action){
           isSuccesfull: true
         },
         transferInProgress:false,
-        events: [action.events , ...state.events]
+        events: [action.event , ...state.events]
       }
     case 'TRANSFER_FAIL':
       return{

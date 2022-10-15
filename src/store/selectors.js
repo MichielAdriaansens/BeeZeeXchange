@@ -3,8 +3,12 @@ import { get, groupBy, reject, maxBy,minBy } from "lodash";
 import { ethers } from "ethers";
 import moment from "moment";
 
+//waarom get!? geeft niet meteen een error als het object niet gevonden is.. 
 const account = state => get(state, 'provider.account');
 const tokens = state => get(state, 'tokens.contracts');
+
+const events = state => get(state, 'exchange.events');
+
 const allOrders = state => get(state, 'exchange.allOrders.data', []);
 const cancelledOrders = state => get(state, 'exchange.cancelledOrders.data', []);
 const filledOrders = state => get(state, 'exchange.filledOrders.data', [])
@@ -27,6 +31,16 @@ const openOrders = state => {
 
    return openOrders;
 }
+//---------------
+//My Events
+export const myEventsSelector = createSelector(account, events, (account, events) => {
+ // if(!account && !events){return}
+   
+   events = events.filter((e) => {return e.args.user === account});
+   //console.log(events);
+   
+   return events;
+})
 //---------------
 //My open Orders
 export const myOpenOrdersSelector = createSelector(openOrders, tokens, account, (orders, tokens, account) => {
@@ -260,7 +274,7 @@ export const priceChartSelector = createSelector(filledOrders, tokens, (orders, 
    orders = orders.filter((o) => {return o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address});
    orders = orders.filter((o) => {return o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address});
    
-   orders.sort((a, b) => a.timeStamp - b.timeStamp);
+   orders = orders.sort((a, b) => a.timeStamp - b.timeStamp);
 
    orders = orders.map((o) => decorateOrder(o, tokens));
 
@@ -282,13 +296,12 @@ function buildGraphData(orders){
    //groupBy devides an array.. by the hour of an order's timeStamp value.
    //Note: the newly created array will adopt the name of the value used to devide the prior array with.
    //..in this case the timeStamp.  
-   orders = groupBy(orders, (o) => moment.unix(o.timeStamp).startOf('hour').format())
-
+   orders = groupBy(orders, (o) => moment.unix(o.timeStamp).startOf('hour').format());
+   
    //returns array of the keys(instead of the values attached to the key)
    const hours = Object.keys(orders);
 
    const graphData = hours.map((hour) => {
-
       //stores all orders with corresponding hour
       const group = orders[hour];
 
