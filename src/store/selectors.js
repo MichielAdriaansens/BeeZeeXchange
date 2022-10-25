@@ -114,7 +114,7 @@ const decorateOrder = (order , tokens) =>{
    let token0amount, token1amount, tokenPrice;
 
    //BCC = token0amount, HIP = token1 amount
-   if(tokens[1].address === order.tokenGive){
+   if(order.tokenGive === tokens[1].address){
       //formatUnits geeft decimal punt aan.. toString doet dat niet
 
       token0amount = ethers.utils.formatUnits(order.amountGive, 'ether'); //'ether' = 18 ivbm decimals 
@@ -129,8 +129,8 @@ const decorateOrder = (order , tokens) =>{
 
    return{
       ...order,
-      token0amount: token0amount,
       token1amount: token1amount,
+      token0amount: token0amount,
       tokenPrice,     // is hetzelfde als tokenPrice: tokenPrice
       formattedTimeStamp: moment.unix(order.timeStamp).format("h:mm:ssa DD MMMM")
    }
@@ -265,7 +265,6 @@ function orderPriceClass(order,previousOrder){
    }
 }
 
-//!!!BONUS!!! Fix dat je meerdere opties hebt voor candle stick.. ipv hours dus days en weeks en months
 //-----------------
 //Price Chart selector
 export const priceChartSelector = createSelector(filledOrders, tokens, (orders, tokens) => {

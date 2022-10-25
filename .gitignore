@@ -28,6 +28,7 @@ coverage
 coverage.json
 typechain
 typechain-types
+goerli.txt
 
 #Hardhat files
 cache

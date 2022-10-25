@@ -153,8 +153,19 @@ small {
 
 	grid-column-start: 1;
 	grid-column-end: 6;
-}
 
+	justify-content: center;
+
+	border: 3px solid #222D41;
+	border-radius: 8px;
+	padding: 9px 29px;
+}
+.exchange__header--brand a {
+	display: inherit;
+	align-items: center;
+	text-decoration: none;
+	color: inherit;
+}
 .exchange__header--brand h1 {
 	display: none;
 }
@@ -366,7 +377,7 @@ small {
 /* Images */
 
 .logo {
-	width: 35px;
+	width: 50px;
 	height: auto;
 	margin: 0 0.5em 0 0;
 }
@@ -588,8 +599,10 @@ table td {
 
 .alert {
 	background: #222D41;
+	border-radius: 12px;
+	border: 3px solid #767F92;
 
-	height: 100px;
+	height: 120px;
 	width: 300px;
 
 	position: fixed;
@@ -598,8 +611,8 @@ table td {
 	z-index: 1;
 
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
+	flex-direction: row;
+	/* justify-content: center; */
 	align-items: center;
 
 	text-align: center;
@@ -623,6 +636,22 @@ table td {
 	opacity: 0;
 	pointer-events: none;
 }
+.alert img {
+	border-radius: 4px;
+	margin-right: 0.85em;
+	margin-left: 0.5em;
+	width: auto;
+	height: auto;
+	max-width: 80%;
+	max-height: 80%;
+}
+
+.alert .special{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	margin-right: 15%;
+}
 
 /* ------------------------------------------------------ */
 /* -- Banner -- */
@@ -638,7 +667,7 @@ table td {
 /* ------------------------------------------------------ */
 /* Media Queries */
 
-@media screen and (min-width: 576px) {
+@media screen and (min-width: 605px) {
 
 	.exchange__markets,
 	.exchange__transfers,
@@ -650,6 +679,26 @@ table td {
 	.exchange__header--brand h1 {
 		display: contents;
 	}
+}
+
+@media screen and (min-width: 605px) and (max-width: 665px) {
+	.exchange__header--brand h1 {
+		display: block;
+		inline-size: 50px;
+	}
+}
+
+@media screen and (max-width: 750px) {
+	.exchange__header{
+		height: auto;
+	}
+	
+	.exchange__header--brand {
+		justify-content: start;
+		border: 0;
+		padding: 12px 30px;
+	}
+
 }
 
 @media screen and (min-width: 768px) {
@@ -800,3 +849,10 @@ table td {
 		grid-column-end: 5;
 	}
 }
+
+/* Mobile horizontal */
+@media screen and (max-height: 320px) and (max-width: 658px) {
+	.exchange__header{
+		height: 20vh;
+	}
+}	

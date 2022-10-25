@@ -50,9 +50,9 @@ function App() {
     //console.log("account from MetaMask: ",account);
 
     //Token Contract
-    const token = await loadTokens([config[chainId].BCC.address, config[chainId].HIP.address], provider, dispatch);
+    const token = await loadTokens([config[chainId].BCC.address, config[chainId].HIP.address, config[chainId].FAC.address], provider, dispatch);
   //  console.log("Token Adress: ", config[chainId].BCC.address);
-    console.log("Token name: ", await token.name());
+  //  console.log("Token name: ", await token.name());
     console.log("Token symbol: ", await token.symbol())
     console.log('total amount: ', ethers.utils.formatEther(await token.totalSupply()));
 

@@ -13,7 +13,7 @@ function Trades(){
           <div className='component__header flex-between'>
             <h2>Trades</h2>
           </div>
-          {!filledOrders || filledOrders.length === 0? <Banner text='No Transactions'/> :
+          {!filledOrders || filledOrders.length === 0? (<Banner text='No Transactions'/>) :
           (
             <table>
             <thead>

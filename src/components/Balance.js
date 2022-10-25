@@ -1,5 +1,6 @@
-import dappLogo from '../assets/dapp.svg';
-import ethLogo from '../assets/eth.svg';
+import bccLogo from '../assets/bitconnect.svg';
+import hipLogo from '../assets/hitbtc-logo.svg';
+import facLogo from '../assets/falcon-4.svg';
 import {useSelector, useDispatch} from 'react-redux';
 import { useEffect, useState, useRef  } from 'react';
 
@@ -12,10 +13,12 @@ function Balance(){
   const [token2TransferAmount, setToken2TransferAmount] = useState(0);
   const dispatch = useDispatch();
  
+  const names = useSelector(state => state.tokens.names);
   const symbols = useSelector(state => state.tokens.symbols);  
   const exchange = useSelector(state => state.exchange.contract);
   const exchangeBalances = useSelector(state => state.exchange.balances);
   const transferInProgress = useSelector(state => state.exchange.transferInProgress);
+  const transactionFin = useSelector(state => state.exchange.transaction.isSuccessful);
   const tokens = useSelector(state => state.tokens.contracts);
   const tokenBalances = useSelector(state => state.tokens.balances);
   const account = useSelector((state)=>{return state.provider.account});
@@ -28,7 +31,7 @@ function Balance(){
     if(exchange && tokens[0] && tokens[1] && account){
     loadBalances(exchange, account, tokens, dispatch);
     }
-  }, [exchange, tokens,account, transferInProgress,dispatch]); //!! de ,[] laat weten als 1 vd variabelen in array verranderd voer useEffect nog een keer uit
+  }, [exchange, tokens,account, transactionFin,transferInProgress,dispatch]); //!! de ,[] laat weten als 1 vd variabelen in array verranderd voer useEffect nog een keer uit
 
   function tabHandler(event){
     if(event.target.className !== depositRef.current.className){
@@ -95,13 +98,15 @@ function Balance(){
 
       <div className='exchange__transfers--form'>
         <div className='flex-between'>
-            <p><small>Token</small><br/><img src={dappLogo} alt="Token logo"/>{symbols && symbols[0]}</p>
+            <p><small>Token</small><br/>
+            {symbols[0] && <img src={bccLogo} alt="Token logo"/>}
+            {symbols && symbols[0]}</p>
             <p><small>Wallet</small><br/>{tokenBalances && Number(tokenBalances[0]).toFixed(1)}</p>
             <p><small>Exchange</small><br/>{exchangeBalances && Number(exchangeBalances[0]).toFixed(1)}</p>
         </div>
 
         <form onSubmit={(e) => isDeposit? depositHandler(e, tokens[0]) : withdrawHandler(e, tokens[0])}>
-          <label htmlFor="token0">{symbols && symbols[0]} Amount:</label>
+          <label htmlFor="token0">{names && names[0]} Amount:</label>
           <input 
           type="text" 
           id='token0' 
@@ -122,13 +127,16 @@ function Balance(){
 
       <div className='exchange__transfers--form'>
         <div className='flex-between'>
-        <p><small>Token</small><br/><img src={ethLogo} alt="Token logo"/>{symbols && symbols[1]}</p>
+        <p><small>Token</small><br/>
+          {symbols[1] && <img src={symbols[1] === 'HIP'? hipLogo : facLogo} alt="Token logo"/>}
+          {symbols && symbols[1]}
+        </p>
             <p><small>Wallet</small><br/>{tokenBalances && Number(tokenBalances[1]).toFixed(1)}</p>
             <p><small>Exchange</small><br/>{exchangeBalances && Number(exchangeBalances[1]).toFixed(1)}</p>
         </div>
 
         <form onSubmit={(e) => isDeposit? depositHandler(e, tokens[1]) : withdrawHandler(e, tokens[1])}>
-          <label htmlFor="token1">{symbols && symbols[1]} Amount:</label>
+          <label htmlFor="token1">{names && names[1]} Amount:</label>
           <input 
           type="text" 
           id='token1' 

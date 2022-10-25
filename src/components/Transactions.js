@@ -52,7 +52,7 @@ function Transactions(){
                         <button ref={tradesRef} onClick={tabHandler} className='tab'>Trades</button>
                         </div>
                     </div>
-                    {!myOpenOrders? (<Banner text='No open orders'/>): 
+                    {!myOpenOrders || myOpenOrders.length === 0 ? (<Banner text='No open orders' />) :
                     (
                         <table>
                             <thead>
@@ -66,7 +66,7 @@ function Transactions(){
                                 {myOpenOrders.map((o,index) => {
                                     return(
                                         <tr key={index}>
-                                            <td style={{color: o.orderTypeClass}}>{o.token0amount}</td>
+                                            <td style={{color: o.orderTypeClass}}>{o.token1amount}</td>
                                             <td>{o.tokenPrice}</td>
                                             {/* de arrow function verzekerd dat de cancelHandler met () alleen gecalled wordt na een click */}
                                             <td><button className='button--sm' onClick={() => {cancelHandler(o,provider,exchange,dispatch)}}>Cancel</button></td>
@@ -103,7 +103,7 @@ function Transactions(){
                                 return(
                                     <tr key={index}>
                                         <td>{o.formattedTimeStamp}</td>
-                                        <td style={{color: o.orderTypeClass}}>{o.orderSign}{o.token0amount}</td>
+                                        <td style={{color: o.orderTypeClass}}>{o.orderSign}{o.token1amount}</td>
                                         <td>{o.tokenPrice}</td>
                                     </tr>
                                 )

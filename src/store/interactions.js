@@ -32,19 +32,39 @@ export async function loadAccount(provider, dispatch){
 
    return account;
 }
-
+/*
 export async function loadTokens(addresses, provider, dispatch){
-    let token , symbol;
+    let token , symbol, name;
      token =  new ethers.Contract(addresses[0] , TOKEN_ABI, provider);
      symbol = await token.symbol();
 
-    dispatch({ type: 'TOKEN_1_LOADED', token, symbol });
+     //console.log('token1 name: ', await token.name());
+     name = await token.name();
+
+     
+    dispatch({ type: 'TOKEN_1_LOADED', token, symbol, name });
 
     token =  new ethers.Contract(addresses[1] , TOKEN_ABI, provider);
     symbol = await token.symbol();
+    name = await token.name();
 
-    dispatch({ type: 'TOKEN_2_LOADED', token, symbol });
+    dispatch({ type: 'TOKEN_2_LOADED', token, symbol, name });
 
+    return token;
+}
+*/
+export async function loadTokens(addresses, provider, dispatch){
+    let token , symbol, name;
+
+    for(let count = 0; count < addresses.length; count++)
+    {
+        token =  new ethers.Contract(addresses[count] , TOKEN_ABI, provider);
+        symbol = await token.symbol();
+        name = await token.name();
+       // console.log(count, await token.name());
+        dispatch({ type: `TOKEN_${count + 1}_LOADED`, token, symbol, name });
+    }
+    
     return token;
 }
 
@@ -107,7 +127,6 @@ export async function transferTokens(provider, amount, token, exchange, transfer
         if(transferType === 'Deposit'){
             transaction = await token.connect(signer).approve(exchange.address, amountToTransfer);
             await transaction.wait();
-        
         
             transaction = await exchange.connect(signer).depositToken(token.address,amountToTransfer);
             await transaction.wait();

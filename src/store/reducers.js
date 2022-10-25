@@ -27,7 +27,7 @@ export function provider(state = {}, action){
     }
 }
 
-const DEFAULT_TOKEN_STATE = {loaded: false, contracts: [], symbols: []};
+const DEFAULT_TOKEN_STATE = {loaded: false, contracts: [], symbols: [], names: []};
 export function tokens(state = DEFAULT_TOKEN_STATE , action){
   switch(action.type){
     case 'TOKEN_1_LOADED':
@@ -35,7 +35,8 @@ export function tokens(state = DEFAULT_TOKEN_STATE , action){
           ...state,
           loaded: true,
           contracts: [action.token],
-          symbols: [action.symbol]
+          symbols: [action.symbol],
+          names: [action.name]
       }
     case 'BALANCE_TOKEN_1_LOADED':
       return {
@@ -47,13 +48,27 @@ export function tokens(state = DEFAULT_TOKEN_STATE , action){
           ...state,
           loaded: true,
           contracts: [...state.contracts, action.token],
-          symbols: [...state.symbols, action.symbol]
+          symbols: [...state.symbols, action.symbol],
+          names: [...state.names, action.name]
       }
       case 'BALANCE_TOKEN_2_LOADED':
         return {
             ...state,
             balances: [...state.balances, action.balance]
-          }
+      }
+      case 'TOKEN_3_LOADED':
+        return {
+          ...state,
+          loaded: true,
+          contracts: [...state.contracts, action.token],
+          symbols: [...state.symbols, action.symbol],
+          names: [...state.names, action.name]
+      }
+      case 'BALANCE_TOKEN_3_LOADED':
+        return {
+            ...state,
+            balances: [...state.balances, action.balance]
+      }
     default:
       return state
   }

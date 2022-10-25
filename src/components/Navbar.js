@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import logo from "../assets/logo.png";
-import ethLogo from "../assets/eth.svg"
+import BZXlogo from "../assets/logo.png";
+
 import Blockies from 'react-blockies';
 import {loadAccount} from '../store/interactions'
 
@@ -28,21 +28,28 @@ function Navbar(){
     return(
        <div className='exchange__header grid'>
         <div className='exchange__header--brand flex'>
-           <img src = {logo} className = 'logo' alt="beezee logo"/>
-           <h1>BeeZee exchange</h1>
+           <a 
+            href="https://www.youtube.com/watch?v=YagUXXtyFn4&ab_channel=BEEZEE"
+            target='_blank'
+            rel="noreferrer"
+           >
+            <img src = {BZXlogo} className = 'logo' alt="beezee X logo"/>
+           
+           <h1>&nbsp;<font color="deepSkyBlue">B</font>ee<font color="deepSkyBlue">Z</font>ee <font color="red">X</font>change</h1>
+           </a>
         </div>
   
         <div className='exchange__header--networks flex'>
-            <img src={ethLogo} alt="ethlogo"/>
-
-                {chainId && (
-                    <select className="networks" id="networks" value={config[chainId]? `0x${chainId.toString(16)}` : "0"} onChange={networkHandler}>
-                        <option value={0} disabled>select network</option>
-                        <option value="0x7A69">local host</option>
-                        <option value="0x2a">Kovan</option>
-                    </select>
-                )}
-
+            <p><small>Network: </small></p>
+            {chainId && (
+                <select className="networks" id="networks" value={config[chainId]? `0x${chainId.toString(16)}` : "0"} onChange={networkHandler}>
+                    <option value={0} disabled>select network</option>
+                    <option value="0x7A69">local host</option>
+                    {/* <option value="0x2a">Kovan</option> */}
+                    <option value="0x5">Goerli</option>
+                </select>
+            )}
+            
         </div>
   
         <div className='exchange__header--account flex'>
