@@ -19,13 +19,13 @@
             "address" : "0x1bE7cDC484E50d57df9EDa81f72EF42543391c7d"
         },
         "BCC": {
-            "address" : "0xab8173217f824c7f670e5f06d901751C87Fc088C"
+            "address" : "0x0385A17668Da21B78FD9934241057f54DFF472F4"
         },
         "HIP": {
-            "address" : "0xa602455a13b62917E0E9AECE119Fc1907301d17B"
+            "address" : "0xC32acFa3Ca0fb24850Ee72ddA8581fEDCC2b2c18"
         },
         "FAC": {
-            "address" : "0xC02b82CCD0A2ddC1FccbADddbF846708E4AA05ac"
+            "address" : "0xeB365867c6931186bC23cf8C7f1801a34C1c9E74"
         },
         "explorerUrl" : "https://goerli.etherscan.io/"
     }

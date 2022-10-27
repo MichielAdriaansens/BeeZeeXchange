@@ -6,7 +6,7 @@ import "hardhat/console.sol";
 contract Token{
     string public name;
     string public symbol;
-    uint256 public decimals = (10**18);
+    uint256 public decimals = 18;
     uint256 public totalSupply;
 
     mapping(address => uint256) public balanceOf;
@@ -18,7 +18,7 @@ contract Token{
     constructor(string memory _name, string memory _sym,uint256 _amount){
         name = _name;
         symbol = _sym;
-        totalSupply = _amount * decimals;
+        totalSupply = _amount * (10 ** decimals);
       //  transfer(msg.sender, totalSupply);
         balanceOf[msg.sender] = totalSupply;
     }

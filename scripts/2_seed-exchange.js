@@ -43,7 +43,7 @@ async function main(){
     console.log(`deployer has BCC: `, await bcc.balanceOf(deployer.address));
     console.log(`deployer has HIP: `, await hip.balanceOf(deployer.address));
     console.log(`deployer has FAC:`, await fac.balanceOf(deployer.address));
-/*
+    
     //Distribute token
     console.log("\nDistributing tokens...");
     console.log(` token approval from: ${deployer.address}\n to: ${user2.address}`)
@@ -54,42 +54,54 @@ async function main(){
     await wait(1);
 
     console.log(`\nTransferring tokens to users... `)
-    await bcc.connect(deployer).transfer(user2.address, amount);
+    transaction = await bcc.connect(deployer).transfer(user2.address, amount);
+    await transaction.wait();
     console.log(` user2 received ${amount} BCC tokens`);
     
-    await hip.connect(deployer).transfer(user2.address, amount);
+    transaction = await hip.connect(deployer).transfer(user2.address, amount);
+    await transaction.wait();
     console.log(` user2 received ${amount} HIP tokens`);
 
-    await fac.connect(deployer).transfer(user2.address, amount);
+    transaction = await fac.connect(deployer).transfer(user2.address, amount);
+    await transaction.wait();
     console.log(` user2 received ${amount} FAC tokens`);
-
+    
     //Deposit tokens to exchange
     console.log(`\nDeposit Token to exchange`);
 
-    await bcc.connect(user1).approve(exchange.address, amount);
+    transaction = await bcc.connect(user1).approve(exchange.address, amount); 
+    await transaction.wait();
     console.log(` Approved ${amount} tokens from: ${user1.address}`);
+    
     await exchange.connect(user1).depositToken(bcc.address, amount);
     console.log(` user1 deposited ${amount} BCC to exchange`);
 
     console.log(`\n`);
 
-    await hip.connect(user1).approve(exchange.address, amount);
+    transaction = await hip.connect(user1).approve(exchange.address, amount);
+    await transaction.wait();
     console.log(` Approved ${amount} tokens from: ${user1.address}`);
+    
     await exchange.connect(user1).depositToken(hip.address, amount);
     console.log(` user1 deposited ${amount} HIP to exchange`);
 
     console.log(`\n`);
-    await fac.connect(user1).approve(exchange.address, amount);
+
+    transaction = await fac.connect(user1).approve(exchange.address, amount);
+    await transaction.wait(1);
     console.log(` Approved ${amount} tokens from: ${user1.address}`);
+
     await exchange.connect(user1).depositToken(fac.address, amount);
     console.log(` user1 deposited ${amount} FAC to exchange`);
 
     await wait(1);
     console.log(`... \n`);
 
-    await hip.connect(user2).approve(exchange.address, amount);
+    transaction = await hip.connect(user2).approve(exchange.address, amount);
+    await transaction.wait()
+
     console.log(` Approved ${amount} tokens from: ${user2.address}`);
-*/    
+    
     await exchange.connect(user2).depositToken(hip.address, amount);
     console.log(` user2 deposited ${amount} HIP to exchange\n`);
 
