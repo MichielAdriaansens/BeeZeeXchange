@@ -44,9 +44,10 @@ function Navbar(){
             {chainId && (
                 <select className="networks" id="networks" value={config[chainId]? `0x${chainId.toString(16)}` : "0"} onChange={networkHandler}>
                     <option value={0} disabled>select network</option>
-                    <option value="0x7A69">local host</option>
+                    <option value="0x7A69">Local host</option>
                     {/* <option value="0x2a">Kovan</option> */}
                     <option value="0x5">Goerli</option>
+                    <option value="0x13881">Mumbai</option>
                 </select>
             )}
             
